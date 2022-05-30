@@ -1,10 +1,11 @@
 import Head from 'next/head';
+import Image from 'next/image';
 
 import Banner from '../components/banner';
 
 import styles from '../styles/Home.module.css';
 
-export default function Home() {
+const Home = () => {
   const handleBannerButtonClick = () => {
     console.log('hello banner button');
   };
@@ -22,7 +23,17 @@ export default function Home() {
           buttonText={'View stores nearby'}
           handleClick={handleBannerButtonClick}
         />
+        <div className={styles.heroImage}>
+          <Image
+            src="/static/hero-image.png"
+            width={700}
+            height={400}
+            alt="Image of a girl drinking coffee"
+          />
+        </div>
       </main>
     </div>
   );
-}
+};
+
+export default Home;
