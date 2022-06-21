@@ -56,7 +56,7 @@ const CoffeeStore = (props) => {
     console.log('handle upvote');
   };
 
-  const { address, name, neighbourhood, imgUrl } = props.coffeeStore;
+  const { name, location, imgUrl } = props.coffeeStore;
 
   return (
     <div className={styles.layout}>
@@ -87,12 +87,12 @@ const CoffeeStore = (props) => {
         <div className={cls('glass', styles.col2)}>
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/places.svg" width={24} height={24} />
-            <p className={styles.text}>{address}</p>
+            <p className={styles.text}>{location.address}</p>
           </div>
 
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/nearMe.svg" width={24} height={24} />
-            <p className={styles.text}>{neighbourhood}</p>
+            <p className={styles.text}>{location.locality}</p>
           </div>
 
           <div className={styles.iconWrapper}>
