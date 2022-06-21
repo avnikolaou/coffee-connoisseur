@@ -8,7 +8,6 @@ body {
   background: url('/static/background.png') no-repeat 50%;
   background-size: cover;
   color: black;
-  height: 100%;
 }
 
 p {
