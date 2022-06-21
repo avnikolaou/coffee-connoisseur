@@ -6,15 +6,15 @@ import cls from 'classnames';
 
 import styles from '../../styles/coffee-store.module.css';
 
-import coffeeStoresData from '../../data/coffee-stores.json';
+import { fetchCoffeeStores } from '../../lib/coffee-stores';
 
 // Next.js will pre-render this page at build time using the props returned by getStaticProps
-export function getStaticProps({ params }) {
-  console.log('Params: ', params);
+export async function getStaticProps({ params }) {
+  const coffeeStores = await fetchCoffeeStores();
   return {
     props: {
-      coffeeStore: coffeeStoresData.find((coffeeStore) => {
-        return coffeeStore.id.toString() === params.id;
+      coffeeStore: coffeeStores.find((coffeeStore) => {
+        return coffeeStore.fsq_id.toString() === params.id;
       }),
     },
   };
@@ -29,11 +29,12 @@ from a page that uses dynamic routes, Next.js will statically
 pre-render all the paths specified by getStaticPaths.
  */
 
-export function getStaticPaths({ params }) {
-  const paths = coffeeStoresData.map((coffeeStore) => {
+export async function getStaticPaths({ params }) {
+  const coffeeStores = await fetchCoffeeStores();
+  const paths = coffeeStores.map((coffeeStore) => {
     return {
       params: {
-        id: coffeeStore.id.toString(),
+        id: coffeeStore.fsq_id.toString(),
       },
     };
   });
@@ -72,7 +73,10 @@ const CoffeeStore = (props) => {
           </div>
 
           <Image
-            src={imgUrl}
+            src={
+              imgUrl ||
+              'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
+            }
             width={600}
             height={360}
             className={styles.storeImg}
