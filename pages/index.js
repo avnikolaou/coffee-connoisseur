@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import isEmpty from 'lodash/isEmpty';
 
 import Banner from '../components/banner';
@@ -10,6 +11,7 @@ import useTrackLocation from '../hooks/use-track-location';
 
 import styles from '../styles/Home.module.css';
 
+// Next.js will pre-render this page at build time using the props returned by 'getStaticProps'.
 export async function getStaticProps(context) {
   const coffeeStores = await fetchCoffeeStores();
   return {
@@ -17,15 +19,28 @@ export async function getStaticProps(context) {
   };
 }
 
-const Home = ({ coffeeStores }) => {
+const Home = (props) => {
   const { handleTrackLocation, latLong, locationErrorMsg, isFindingLocation } =
     useTrackLocation();
 
-  console.log({ latLong });
-  console.log({ locationErrorMsg });
+  const [coffeeStores, setCoffeeStores] = useState('');
+  const [coffeeStoresError, setCoffeeStoresError] = useState(null);
+
+  useEffect(() => {
+    async function setCoffeeStoresByLocation() {
+      if (latLong) {
+        try {
+          const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 9);
+          setCoffeeStores(fetchedCoffeeStores);
+        } catch (e) {
+          setCoffeeStoresError(e.message);
+        }
+      }
+    }
+    setCoffeeStoresByLocation();
+  }, [latLong]);
 
   const handleBannerButtonClick = () => {
-    console.log('hello banner button');
     handleTrackLocation();
   };
 
@@ -41,7 +56,10 @@ const Home = ({ coffeeStores }) => {
           buttonText={isFindingLocation ? 'Locating...' : 'View stores nearby'}
           handleClick={handleBannerButtonClick}
         />
+
         {locationErrorMsg && <p>Something went wrong: {locationErrorMsg}</p>}
+        {coffeeStoresError && <p>Something went wrong: {coffeeStoresError}</p>}
+
         <div className={styles.heroImage}>
           <Image
             src="/static/hero-image.png"
@@ -50,11 +68,34 @@ const Home = ({ coffeeStores }) => {
             alt="Image of a girl drinking coffee"
           />
         </div>
-        {!isEmpty(coffeeStores) && (
+
+        {coffeeStores.length > 0 && (
+          <div className={styles.sectionWrapper}>
+            <h2 className={styles.heading}>Stores near me</h2>
+            <div className={styles.cardLayout}>
+              {coffeeStores.map((coffeeStore) => {
+                return (
+                  <Card
+                    key={coffeeStore.id}
+                    name={coffeeStore.name}
+                    imgUrl={
+                      coffeeStore.imgUrl ||
+                      'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
+                    }
+                    href={`/coffee-store/${coffeeStore.id}`}
+                    className={styles.card}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {!isEmpty(props.coffeeStores) && (
           <div className={styles.sectionWrapper}>
             <h2 className={styles.heading}>Toronto Stores</h2>
             <div className={styles.cardLayout}>
-              {coffeeStores.map((c) => {
+              {props.coffeeStores.map((c) => {
                 return (
                   <Card
                     key={c.id}
