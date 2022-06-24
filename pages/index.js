@@ -69,7 +69,7 @@ const Home = (props) => {
           />
         </div>
 
-        {coffeeStores.length > 0 && (
+        {!isEmpty(coffeeStores) && (
           <div className={styles.sectionWrapper}>
             <h2 className={styles.heading}>Stores near me</h2>
             <div className={styles.cardLayout}>

@@ -11,11 +11,13 @@ import { fetchCoffeeStores } from '../../lib/coffee-stores';
 // Next.js will pre-render this page at build time using the props returned by getStaticProps
 export async function getStaticProps({ params }) {
   const coffeeStores = await fetchCoffeeStores();
+  const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
+    return coffeeStore.id.toString() === params.id;
+  });
+
   return {
     props: {
-      coffeeStore: coffeeStores.find((coffeeStore) => {
-        return coffeeStore.id.toString() === params.id;
-      }),
+      coffeeStore: findCoffeeStoreById || {},
     },
   };
 }
@@ -65,7 +67,7 @@ const CoffeeStore = (props) => {
       </Head>
       <div className={styles.container}>
         <div className={styles.col1}>
-          <div className={styles.backtoHomeLink}>
+          <div className={styles.backToHomeLink}>
             <Link href="/">← Back to home</Link>
           </div>
           <div className={styles.nameWrapper}>
