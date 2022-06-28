@@ -2,11 +2,15 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from 'react';
+import isEmpty from 'lodash/isEmpty';
 import cls from 'classnames';
 
-import styles from '../../styles/coffee-store.module.css';
+import { StoreContext } from '../_app';
 
 import { fetchCoffeeStores } from '../../lib/coffee-stores';
+
+import styles from '../../styles/coffee-store.module.css';
 
 // Next.js will pre-render this page at build time using the props returned by getStaticProps
 export async function getStaticProps({ params }) {
@@ -47,8 +51,25 @@ export async function getStaticPaths({ params }) {
   };
 }
 
-const CoffeeStore = (props) => {
+const CoffeeStore = (initialProps) => {
   const router = useRouter();
+
+  const id = router.query.id;
+  const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+  const {
+    state: { coffeeStores },
+  } = useContext(StoreContext);
+
+  useEffect(() => {
+    if (isEmpty(initialProps.coffeeStore)) {
+      if (!isEmpty(coffeeStores)) {
+        const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
+          return coffeeStore.id.toString() === id;
+        });
+        setCoffeeStore(findCoffeeStoreById);
+      }
+    }
+  }, [id]);
 
   if (router.isFallback) {
     return <div>Loading...</div>;
@@ -58,7 +79,7 @@ const CoffeeStore = (props) => {
     console.log('handle upvote');
   };
 
-  const { name, address, locality, imgUrl } = props.coffeeStore;
+  const { name, address, locality, imgUrl } = coffeeStore;
 
   return (
     <div className={styles.layout}>
