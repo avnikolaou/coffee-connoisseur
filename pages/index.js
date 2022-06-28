@@ -6,7 +6,7 @@ import isEmpty from 'lodash/isEmpty';
 import Banner from '../components/banner';
 import Card from '../components/card';
 
-import { ACTION_TYPES, StoreContext } from './_app';
+import { ACTION_TYPES, StoreContext } from '../store/store-context';
 
 import useTrackLocation from '../hooks/use-track-location';
 
