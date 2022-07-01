@@ -12,7 +12,7 @@ const useTrackLocation = () => {
 
     dispatch({
       type: ACTION_TYPES.SET_LANG_LONG,
-      payload: { latLong: `${latitude}, ${longitude}` },
+      payload: { latLong: `${latitude},${longitude}` },
     });
     setLocationErrorMsg('');
     setIsFindingLocation(false);
