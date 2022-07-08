@@ -13,47 +13,57 @@ const createCoffeeStore = async (req, res) => {
   if (req.method === 'POST') {
     const { id, name, neighbourhood, address, imgUrl, voting } = req.body;
     try {
-      const findCoffeeStoreRecords = await table
-        .select({
-          filterByFormula: `id=${id}`,
-        })
-        .firstPage();
+      if (id) {
+        const findCoffeeStoreRecords = await table
+          .select({
+            filterByFormula: `id=${id}`,
+          })
+          .firstPage();
 
-      console.log('CoffeeStore: ', findCoffeeStoreRecords);
+        console.log('CoffeeStore: ', findCoffeeStoreRecords);
 
-      if (!isEmpty(findCoffeeStoreRecords)) {
-        const records = findCoffeeStoreRecords.map((r) => {
-          return {
-            ...r.fields,
-          };
-        });
-        res.json(records);
+        if (!isEmpty(findCoffeeStoreRecords)) {
+          const records = findCoffeeStoreRecords.map((r) => {
+            return {
+              ...r.fields,
+            };
+          });
+          res.json(records);
+        } else {
+          if (name) {
+            const createRecords = await table.create([
+              {
+                fields: {
+                  id,
+                  name,
+                  address,
+                  neighbourhood,
+                  voting,
+                  imgUrl,
+                },
+              },
+            ]);
+
+            const records = createRecords.map((r) => {
+              return {
+                ...r.fields,
+              };
+            });
+
+            res.json(records);
+          } else {
+            res.status(400);
+            res.json({ message: 'Name is missing!' });
+          }
+        }
       } else {
-        const createRecords = await table.create([
-          {
-            fields: {
-              id,
-              name,
-              address,
-              neighbourhood,
-              voting,
-              imgUrl,
-            },
-          },
-        ]);
-
-        const records = createRecords.map((r) => {
-          return {
-            ...r.fields,
-          };
-        });
-
-        res.json(records);
+        res.status(400);
+        res.json({ message: 'Id is missing!' });
       }
     } catch (e) {
-      console.error('Error finding store', e);
+      console.error('Error creating or finding store', e);
       res.status(500);
-      res.json({ message: 'Error finding store', e });
+      res.json({ message: 'Error creating or finding store', e });
     }
   } else {
     res.json({ message: 'GETTING!' });
