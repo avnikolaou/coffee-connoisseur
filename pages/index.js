@@ -52,7 +52,7 @@ const Home = (props) => {
       }
     }
     setCoffeeStoresByLocation();
-  }, [latLong]);
+  }, [dispatch, latLong]);
 
   const handleBannerButtonClick = () => {
     handleTrackLocation();
