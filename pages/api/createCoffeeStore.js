@@ -11,18 +11,29 @@ console.log('TABLE: ', table);
 
 const createCoffeeStore = async (req, res) => {
   if (req.method === 'POST') {
-    const findCoffeeStoreRecords = await table
-      .select({
-        filterByFormula: `id="0"`,
-      })
-      .firstPage();
+    try {
+      const findCoffeeStoreRecords = await table
+        .select({
+          filterByFormula: `id="0"`,
+        })
+        .firstPage();
 
-    console.log('CoffeeStore: ', findCoffeeStoreRecords);
+      console.log('CoffeeStore: ', findCoffeeStoreRecords);
 
-    if (!isEmpty(findCoffeeStoreRecords)) {
-      res.json(findCoffeeStoreRecords);
-    } else {
-      res.json({ message: 'create a record' });
+      if (!isEmpty(findCoffeeStoreRecords)) {
+        const records = findCoffeeStoreRecords.map((r) => {
+          return {
+            ...r.fields,
+          };
+        });
+        res.json(records);
+      } else {
+        res.json({ message: 'create a record' });
+      }
+    } catch (e) {
+      console.error('Error finding store', e);
+      res.status(500);
+      res.json({ message: 'Error finding store', e });
     }
   } else {
     res.json({ message: 'GETTING!' });
