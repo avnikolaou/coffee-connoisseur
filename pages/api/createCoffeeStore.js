@@ -1,13 +1,5 @@
 import isEmpty from 'lodash/isEmpty';
-
-const Airtable = require('airtable');
-const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
-  process.env.AIRTABLE_BASE_KEY
-);
-
-const table = base('coffee-stores');
-
-console.log('TABLE: ', table);
+import { table, normalizeRecords } from '../../lib/airtable';
 
 const createCoffeeStore = async (req, res) => {
   if (req.method === 'POST') {
@@ -20,14 +12,8 @@ const createCoffeeStore = async (req, res) => {
           })
           .firstPage();
 
-        console.log('CoffeeStore: ', findCoffeeStoreRecords);
-
         if (!isEmpty(findCoffeeStoreRecords)) {
-          const records = findCoffeeStoreRecords.map((r) => {
-            return {
-              ...r.fields,
-            };
-          });
+          const records = normalizeRecords(findCoffeeStoreRecords);
           res.json(records);
         } else {
           if (name) {
@@ -44,11 +30,7 @@ const createCoffeeStore = async (req, res) => {
               },
             ]);
 
-            const records = createRecords.map((r) => {
-              return {
-                ...r.fields,
-              };
-            });
+            const records = normalizeRecords(createRecords);
 
             res.json(records);
           } else {
