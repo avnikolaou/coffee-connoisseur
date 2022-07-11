@@ -1,20 +1,14 @@
 import isEmpty from 'lodash/isEmpty';
 
-import { table, normalizeRecords } from '../../lib/airtable';
+import { findRecordByFilter } from '../../lib/airtable';
 
 const getCoffeeStoreById = async (req, res) => {
   const { id } = req.query;
 
   try {
     if (id) {
-      const findCoffeeStoreRecords = await table
-        .select({
-          filterByFormula: `id="${id}"`,
-        })
-        .firstPage();
-
-      if (!isEmpty(findCoffeeStoreRecords)) {
-        const records = normalizeRecords(findCoffeeStoreRecords);
+      const records = await findRecordByFilter(id);
+      if (!isEmpty(records)) {
         res.json(records);
       } else {
         res.json({ message: 'Id could not be found!' });

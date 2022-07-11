@@ -1,19 +1,19 @@
 import isEmpty from 'lodash/isEmpty';
-import { table, normalizeRecords } from '../../lib/airtable';
+
+import {
+  findRecordByFilter,
+  table,
+  normalizeRecords,
+} from '../../lib/airtable';
 
 const createCoffeeStore = async (req, res) => {
   if (req.method === 'POST') {
     const { id, name, neighbourhood, address, imgUrl, voting } = req.body;
     try {
       if (id) {
-        const findCoffeeStoreRecords = await table
-          .select({
-            filterByFormula: `id="${id}"`,
-          })
-          .firstPage();
+        const records = await findRecordByFilter(id);
 
-        if (!isEmpty(findCoffeeStoreRecords)) {
-          const records = normalizeRecords(findCoffeeStoreRecords);
+        if (!isEmpty(records)) {
           res.json(records);
         } else {
           if (name) {
