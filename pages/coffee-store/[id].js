@@ -56,6 +56,7 @@ const CoffeeStore = (initialProps) => {
 
   const id = router.query.id;
   const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+  const [votingCount, setVotingCount] = useState(0);
   const {
     state: { coffeeStores },
   } = useContext(StoreContext);
@@ -106,6 +107,7 @@ const CoffeeStore = (initialProps) => {
   }
 
   const handleUpvoteButton = () => {
+    setVotingCount(votingCount + 1);
     console.log('handle upvote');
   };
 
@@ -150,7 +152,7 @@ const CoffeeStore = (initialProps) => {
 
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/star.svg" width={24} height={24} />
-            <p className={styles.text}>1</p>
+            <p className={styles.text}>{votingCount}</p>
           </div>
 
           <button className={styles.upvoteButton} onClick={handleUpvoteButton}>
