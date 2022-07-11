@@ -5,10 +5,13 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import isEmpty from 'lodash/isEmpty';
 import cls from 'classnames';
+import useSWR from 'swr';
 
 import { StoreContext } from '../../store/store-context';
 
 import { fetchCoffeeStores } from '../../lib/coffee-stores';
+
+import { fetcher } from '../../lib/fetcher';
 
 import styles from '../../styles/coffee-store.module.css';
 
@@ -61,6 +64,8 @@ const CoffeeStore = (initialProps) => {
     state: { coffeeStores },
   } = useContext(StoreContext);
 
+  const { data, error } = useSWR(`/api/getCoffeeStoreById?id=${id}`, fetcher);
+
   const handleCreateCoffeeStore = async (coffeeStore) => {
     try {
       const { id, name, imgUrl, locality, address } = coffeeStore;
@@ -84,6 +89,18 @@ const CoffeeStore = (initialProps) => {
       console.error('Error creating coffee store', e);
     }
   };
+
+  useEffect(() => {
+    if (!isEmpty(data)) {
+      console.log('DATA: ', data);
+      setCoffeeStore(data[0]);
+      setVotingCount(data[0].voting);
+    }
+
+    if (error) {
+      return <div>Something went wrong!</div>;
+    }
+  }, [data, error]);
 
   useEffect(() => {
     if (isEmpty(initialProps.coffeeStore)) {
@@ -111,7 +128,7 @@ const CoffeeStore = (initialProps) => {
     console.log('handle upvote');
   };
 
-  const { name, address, locality, imgUrl } = coffeeStore;
+  const { name, address, locality, neighbourhood, imgUrl } = coffeeStore;
 
   return (
     <div className={styles.layout}>
@@ -147,7 +164,7 @@ const CoffeeStore = (initialProps) => {
 
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/nearMe.svg" width={24} height={24} />
-            <p className={styles.text}>{locality}</p>
+            <p className={styles.text}>{locality || neighbourhood}</p>
           </div>
 
           <div className={styles.iconWrapper}>

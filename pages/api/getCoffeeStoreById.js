@@ -15,7 +15,7 @@ const getCoffeeStoreById = async (req, res) => {
       }
     } else {
       res.status(400);
-      res.json({ message: 'Id is missing' });
+      res.json({ message: 'Id is missing!' });
     }
   } catch (e) {
     res.status(500);
